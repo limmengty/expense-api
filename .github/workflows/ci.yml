@@ -24,7 +24,7 @@ jobs:
           cache: maven
 
       - name: Run unit tests
-        run: chmod +x mvnw && ./mvnw test -B -Dtest='!ExpenseApiApplicationTests'
+        run: chmod +x mvnw && ./mvnw test -B -DexcludedGroups=integration
 
   # ── Build & Push ───────────────────────────────────────────
   build-push:

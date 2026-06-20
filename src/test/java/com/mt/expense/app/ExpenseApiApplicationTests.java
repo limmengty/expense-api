@@ -2,6 +2,7 @@ package com.mt.expense.app;
 
 import static org.mockito.Mockito.mock;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -19,6 +20,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Testcontainers
 @ActiveProfiles("test")
+@Tag("integration")
 @Import(ExpenseApiApplicationTests.TestConfig.class)
 class ExpenseApiApplicationTests {
 
