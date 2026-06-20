@@ -72,9 +72,12 @@ jobs:
 
       - name: Scan image for vulnerabilities
         uses: aquasecurity/trivy-action@master
+        env:
+          TRIVY_SEVERITY: CRITICAL,HIGH
+          TRIVY_SCANNERS: vuln
+          TRIVY_VULN_TYPE: library
         with:
           image-ref: ${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version }}
-          severity: CRITICAL,HIGH
           exit-code: '1'
 
   # ── Update CD Repo ─────────────────────────────────────────
