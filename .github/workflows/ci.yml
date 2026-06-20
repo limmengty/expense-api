@@ -110,13 +110,13 @@ jobs:
       - name: Patch image tag in overlay
         run: |
           kustomize edit set image mengty199/expense-api=mengty199/expense-api:${{ needs.build-push.outputs.image-tag }}
-        working-directory: cd-repo/demok8s/apps/expense-api/overlays/${{ steps.env.outputs.overlay }}
+        working-directory: cd-repo/apps/expense-api/overlays/${{ steps.env.outputs.overlay }}
 
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add demok8s/apps/expense-api/overlays/${{ steps.env.outputs.overlay }}/kustomization.yaml
+          git add apps/expense-api/overlays/${{ steps.env.outputs.overlay }}/kustomization.yaml
           git commit -m "ci(expense-api): update image → ${{ needs.build-push.outputs.image-tag }} [${{ steps.env.outputs.overlay }}]"
           git push
         working-directory: cd-repo
