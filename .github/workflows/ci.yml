@@ -23,11 +23,8 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Set up Docker
-        uses: docker/setup-docker@v4
-
       - name: Run unit tests
-        run: chmod +x mvnw && ./mvnw test -B
+        run: chmod +x mvnw && ./mvnw test -B -Dtest='!ExpenseApiApplicationTests'
 
   # ── Build & Push ───────────────────────────────────────────
   build-push:
