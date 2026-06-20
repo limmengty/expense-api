@@ -81,42 +81,38 @@ jobs:
           exit-code: '1'
 
   # ── Update CD Repo ─────────────────────────────────────────
-  update-cd:
-    name: Update CD Manifest
-    needs: build-push
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout CD repo
-        uses: actions/checkout@v4
-        with:
-          repository: limmengty/k8s-expense-demo
-          token: ${{ secrets.CD_REPO_TOKEN }}
-          path: cd-repo
-
-      - name: Install kustomize
-        uses: imranismail/setup-kustomize@v2
-
-      - name: Determine target overlay
-        id: env
-        run: |
-          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            echo "overlay=staging" >> $GITHUB_OUTPUT
-          else
-            echo "overlay=dev" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Patch image tag in overlay
-        working-directory: cd-repo/demok8s/apps/expense-api/overlays/${{ steps.env.outputs.overlay }}
-        run: |
-          kustomize edit set image mengty199/expense-api=mengty199/expense-api:${{ needs.build-push.outputs.image-tag }}
-
-      - name: Commit and push
-        working-directory: cd-repo
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add demok8s/apps/expense-api/overlays/${{ steps.env.outputs.overlay }}/kustomization.yaml
-          git commit -m "ci(expense-api): update image → ${{ needs.build-push.outputs.image-tag }} [${{ steps.env.outputs.overlay }}]"
-          git push
+  # NOTE: CD repo path needs to be verified before enabling
+  # update-cd:
+  #   name: Update CD Manifest
+  #   needs: build-push
+  #   if: github.ref == 'refs/heads/main'
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout CD repo
+  #       uses: actions/checkout@v4
+  #       with:
+  #         repository: limmengty/k8s-expense-demo
+  #         token: ${{ secrets.CD_REPO_TOKEN }}
+  #         path: cd-repo
+  #     - name: Install kustomize
+  #       uses: imranismail/setup-kustomize@v2
+  #     - name: Determine target overlay
+  #       id: env
+  #       run: |
+  #         if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+  #           echo "overlay=staging" >> $GITHUB_OUTPUT
+  #         else
+  #           echo "overlay=dev" >> $GITHUB_OUTPUT
+  #         fi
+  #     - name: Patch image tag in overlay
+  #       working-directory: cd-repo/demok8s/apps/expense-api/overlays/${{ steps.env.outputs.overlay }}
+  #       run: |
+  #         kustomize edit set image mengty199/expense-api=mengty199/expense-api:${{ needs.build-push.outputs.image-tag }}
+  #     - name: Commit and push
+  #       working-directory: cd-repo
+  #       run: |
+  #         git config user.name "github-actions[bot]"
+  #         git config user.email "github-actions[bot]@users.noreply.github.com"
+  #         git add demok8s/apps/expense-api/overlays/${{ steps.env.outputs.overlay }}/kustomization.yaml
+  #         git commit -m "ci(expense-api): update image → ${{ needs.build-push.outputs.image-tag }} [${{ steps.env.outputs.overlay }}]"
+  #         git push
