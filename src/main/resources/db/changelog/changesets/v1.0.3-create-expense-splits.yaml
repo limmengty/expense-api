@@ -1,0 +1,53 @@
+databaseChangeLog:
+  - changeSet:
+      id: v1.0.3-create-expense-splits
+      author: expense-app
+      changes:
+        - createTable:
+            tableName: expense_splits
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: expense_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: amount
+                  type: NUMERIC(12, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: percentage
+                  type: NUMERIC(5, 2)
+        - addForeignKeyConstraint:
+            baseTableName: expense_splits
+            baseColumnNames: expense_id
+            referencedTableName: expenses
+            referencedColumnNames: id
+            constraintName: fk_expense_splits_expense
+            onDelete: CASCADE
+        - sql:
+            sql: ALTER TABLE expense_splits ADD CONSTRAINT chk_split_amount_positive CHECK (amount >= 0)
+        - createIndex:
+            indexName: idx_expense_splits_expense_id
+            tableName: expense_splits
+            columns:
+              - column:
+                  name: expense_id
+        - createIndex:
+            indexName: idx_expense_splits_user_id
+            tableName: expense_splits
+            columns:
+              - column:
+                  name: user_id

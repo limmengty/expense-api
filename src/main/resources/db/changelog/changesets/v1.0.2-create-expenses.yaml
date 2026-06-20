@@ -1,0 +1,98 @@
+databaseChangeLog:
+  - changeSet:
+      id: v1.0.2-create-expenses
+      author: expense-app
+      changes:
+        - createTable:
+            tableName: expenses
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: group_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: payer_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: amount
+                  type: NUMERIC(12, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: currency
+                  type: CHAR(3)
+                  defaultValue: 'USD'
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: VARCHAR(500)
+              - column:
+                  name: split_strategy
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: settled
+                  type: BOOLEAN
+                  defaultValue: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: settled_at
+                  type: TIMESTAMPTZ
+              - column:
+                  name: created_at
+                  type: TIMESTAMPTZ
+                  defaultValueComputed: NOW()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMPTZ
+                  defaultValueComputed: NOW()
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: expenses
+            baseColumnNames: group_id
+            referencedTableName: groups
+            referencedColumnNames: id
+            constraintName: fk_expenses_group
+            onDelete: CASCADE
+        - sql:
+            sql: ALTER TABLE expenses ADD CONSTRAINT chk_amount_positive CHECK (amount >= 0)
+        - createIndex:
+            indexName: idx_expenses_group_id
+            tableName: expenses
+            columns:
+              - column:
+                  name: group_id
+        - createIndex:
+            indexName: idx_expenses_payer_id
+            tableName: expenses
+            columns:
+              - column:
+                  name: payer_id
+        - createIndex:
+            indexName: idx_expenses_created_at
+            tableName: expenses
+            columns:
+              - column:
+                  name: created_at
+            order: DESC
+        - createIndex:
+            indexName: idx_expenses_settled
+            tableName: expenses
+            columns:
+              - column:
+                  name: settled

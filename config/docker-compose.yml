@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: expense-postgres
+    environment:
+      POSTGRES_DB: expense_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  keycloak:
+    image: keycloak/keycloak:26.0
+    container_name: expense-keycloak
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HTTP_PORT: 8180
+      KC_HTTPS_ENABLED: "false"
+    command: start-dev --http-port=8180
+    ports:
+      - "8180:8180"
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8180/health/ready || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+    restart: on-failure
+
+  keycloak-config-cli:
+    image: adorsys/keycloak-config-cli:latest-21.1.2
+    container_name: expense-keycloak-config
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    environment:
+      KEYCLOAK_URL: http://keycloak:8180
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+      KEYCLOAK_CONFIG_CLI_IMPORT: /config/expense-realm.yml
+    volumes:
+      - ./keycloak/config/expense-realm.yml:/config/expense-realm.yml:ro
+    restart: on-failure
+
+  # expense-api:
+  #   build:
+  #     context: ..
+  #     dockerfile: config/Dockerfile
+  #   container_name: expense-api
+  #   environment:
+  #     DATABASE_URL: jdbc:postgresql://postgres:5432/expense_db
+  #     DATABASE_USERNAME: postgres
+  #     DATABASE_PASSWORD: postgres
+  #     KEYCLOAK_ISSUER_URI: http://keycloak:8180/realms/expense
+  #     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8180/realms/expense
+  #   ports:
+  #     - "8080:8080"
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     keycloak:
+  #       condition: service_healthy
+  #     keycloak-config-cli:
+  #       condition: service_completed_successfully
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+  #   restart: on-failure
+
+volumes:
+  postgres_data:
+  keycloak_data:

@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: v1.0.4-create-indexes
+      author: expense-app
+      changes:
+        - createIndex:
+            indexName: idx_expenses_group_settled
+            tableName: expenses
+            columns:
+              - column:
+                  name: group_id
+              - column:
+                  name: settled
+        - createIndex:
+            indexName: idx_expenses_group_created
+            tableName: expenses
+            columns:
+              - column:
+                  name: group_id
+              - column:
+                  name: created_at
+            order: DESC

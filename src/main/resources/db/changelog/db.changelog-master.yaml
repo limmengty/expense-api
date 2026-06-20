@@ -1,0 +1,25 @@
+databaseChangeLog:
+  - include:
+      file: changesets/v1.0.0-create-groups.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/v1.0.1-create-group-members.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/v1.0.2-create-expenses.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/v1.0.3-create-expense-splits.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/v1.0.4-create-indexes.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/v1.0.5-seed-data.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/v1.0.6-create-users.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/v1.0.7-create-settlements.yaml
+      relativeToChangelogFile: true
