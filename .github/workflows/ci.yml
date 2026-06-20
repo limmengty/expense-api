@@ -95,7 +95,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: limmengty/k8s-expense-demo
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.CD_REPO_TOKEN }}
           path: cd-repo
 
       - name: Install kustomize
