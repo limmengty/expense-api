@@ -9,6 +9,9 @@ on:
 env:
   IMAGE_NAME: mengty199/expense-api
 
+permissions:
+  contents: write
+
 jobs:
   # ── Test ───────────────────────────────────────────────────
   test:
