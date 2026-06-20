@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Copy maven files
 COPY pom.xml .
-COPY settings.xml . 2>/dev/null || true
+RUN [ ! -f settings.xml ] || cp settings.xml .
 
 # Download dependencies
 RUN mvn dependency:go-offline -B || true
@@ -20,8 +20,14 @@ FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /app
 
+# Non-root user
+RUN addgroup -g 1000 -S appgroup && \
+    adduser -u 1000 -S appuser -G appgroup
+
 # Copy the jar file
-COPY --from=builder /app/target/*.jar app.jar
+COPY --from=builder --chown=appuser:appgroup /app/target/*.jar app.jar
+
+USER appuser
 
 # Expose port
 EXPOSE 8080
